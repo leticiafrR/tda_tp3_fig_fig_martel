@@ -1,0 +1,153 @@
+\section{Análisis del problema}\label{sec:analisisProblema}
+En esta sección expondremos la información con la que disponemos y cómo es que ideamos el procedimiento representado en el algoritmo propuesto.
+
+Dados los datos de entrada, denominaremos:
+\begin{itemize}
+    \item Cantidad de minutos a considerar ($n$).
+    \item Cantidad de soldados que llegarán en el i-ésimo minuto ($x_i$).
+    \item Capacidad de eliminación de soldados si transcurrieron j minutos desde el anterior ataque ($f_j$, sea $j<=i$).
+\end{itemize}
+
+Para encontrar la solución general, buscamos que de la solución de los subproblemas previos obtengamos los siguiente datos de forma iterativa:
+\begin{itemize}
+    \item Cantidad de eliminaciones maximizadas de atacar en el minuto i/muertes óptimas en el minuto i ($OP(i)$)
+    \item Minuto del reinicio de energía previo más reciente ($reinicio_i$).
+    \item Energia disponible dado $reinicio_i=k$  ($e_k$).
+\end{itemize}
+
+\setlength{\parindent}{0cm}Una consideración que tuvimos en cuenta fue que al maximizar iterativamente las muertes que podriamos provocar con nuestra estrategia, parece conveniente siempre atacar en el último minuto. Esto podría llevar a que si se toma una estrategia óptima de manera fija para la formación de estrategias futuras podriamos estar incurriendo en el error de no reevaluar su optimalidad ante otras estrategias que ya vendriamos habiendo construido y que tendríamos hasta ese punto en disposición. Centraremos el analisis de las soluciones de los subproblemas pasados de forma en que estos me puedan ayudar a construir la solución de subrpoblemas más grandes, concretamente buscaremos definir qué subestratégia óptima previa nos permitirá llegar con la energía necesaria para obetener resultados óptimos para el subrpoblema que se esté analizando. 
+
+\setlength{\parindent}{0cm}Adicionalmente, mencionamos que la energía disponible después del último ataque realizado en el minuto k ($e_k$) no es más que los minutos que transcurrieron a partir del minuto k.
+
+\setlength{\parindent}{0cm}Veamos cómo podemos encarar nuestro problema a través del análisis de breve. Sea $n = 3$:
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c| }
+\hline
+\textbf{$x_i$} & 900 & 600 & 800 \\ \hline
+\textbf{$f_i$} & 100 & 150 & 600 \\
+\hline
+\end{tabular}
+\end{center}
+
+\paragraph{En el minuto $i=0$:} No hay rafagas de soladados que matar y no hubo reinicio previo (\textit{No podemos atacar}). Es decir: $OP(0)=0$.
+
+\paragraph{En el minuto $i=1$:} Sabiendo que siempre nos conviene atacar en el último minuto solo tenemos que definir con cuánta energía. Solo tenemos \textbf{una opción} puesto que solo podemos llegar con energía = 1 ($e_0=1)$. Por lo tanto, con  $reincio_1=0$: $OP(1)=100$.
+
+
+\paragraph{En el minuto $i=2$:} Ahora contemplamos \textbf{2 opciones}: Eliminar o a 150 o a 100 soldados de la horda actual. Para poder eliminar a 150 deberíamos haber llegado a este minuto con energía = 2 (es decir: $reinicio_2=0$) y tendríamos las eliminaciones que ya llevabamos hasta el minuto de reincio (en este caso ninguna pues $OP(0)=0$), mientras que para poder eliminar a 100 soldados necesitaríamos llegar con energía = 1 (es decir: $reinicio_2=1$) contando entonces con las 100 eliminaciones realizadas hasta el minuto de reinicio de la opción considerandose (pues $OP(1)=100$). En otras palabras, las posibles muertes a lo largo de la batalla que podemos generar son:
+
+\begin{itemize}
+    \item $reinicio_2=0$: $OP(0)$ + 100 = 0+150 = 150 eliminaciones.
+    \item $reinicio_2=1$: $OP(1)$ + 150 = 100+100 = 200 eliminaciones.
+\end{itemize}
+Podemos entonces concluir que tomando $reinicio_2=1$, nuestro óptimo es $OP_2 = 200$,
+
+\paragraph{En el minuto $i=3$:} Contemplamos \textbf{3 opciones}: Eliminar o a 600, a o a 150 o 100 soldados de la horda actual. Eliminar a 100 implica $reinicio_3=0$ entonces las muertes ya optimizadas que adiciono son $OP(0)=0$; a su vez, eliminar a 150 implica $reinicio_3=1$ entonces las muertes ya optimizadas que adiciono son $OP(1)=100$; finalmente, eliminar a 100 implica $reincio_3=2$ entonces las muertes ya optimizadas que adiciono son $OP(2)=200$. En otras palabras:
+
+\begin{itemize}
+    \item Sin previo reinicio $reinicio_3=0$: $OP(0)$ + 600 = 0+600 = 600 eliminaciones.
+    \item Previo reinicio en $reinicio_3=1$: $OP(1)$ + 150 = 100+150 = 250 eliminaciones.
+    \item Previo reinicio en $reinicio_3=2$: $OP(2)$ + 100 = 200+100 = 300 eliminaciones.
+\end{itemize}
+Entonces, con $reinicio_3=0$: $OP(3) = 600$. 
+
+\paragraph{Al terminar la batalla:} La máxima cantidad de eliminaciones que logramos producir fue de 600 soldados y los datos obtenidos de las soluciones iterativas fueron:
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c| }
+\hline
+\textbf{$OP(i)$} & 0 & 100 & 200 & 600 \\ \hline
+\textbf{$reinicio_i$} & 0 & 0 & 1 & 0 \\
+\hline
+\end{tabular}
+\end{center}
+
+Bajo el esquema presentado, podemos realizar la reconstrucción de la estrategía que nos llevó a la cantidad de eliminaciones calculada. En general, dados los reinicios, si retrocedemos desde el final hasta llegar al minuto 0 (donde no hay ataques previos) podremos ubicar los minutos en los que hemos realizado un ataque (por ende un reinicio de energía). En este ejemplo, como $reinicio_3=0$ entonces el primer y último ataque fue en dicho minuto: CARGAR, CARGAR,ATACAR. 
+
+Algunos puntos que nos gustaría extraer del ejemplo desarrollado:
+\begin{itemize}
+    \item{No siempre maximizar la cantidad de eliminaciones en la rafaga actual implica mejores resultados. Vease el análisis para $i=2$.}
+    \item{El tener en cuenta las estrategias óptimas previas nos facilita el no tener que calcular la estrategia previamente usada al último reinicio de energia. Entonces no evaluamos estrategias con un mismo último reinicio de energia que no sean las mejores.}
+    \item{Todo óptimo futuro se compone de alguno de los óptimos pasados (incluyendo, y en especial, a  $OP(0)=0$).}
+    \item{Para escoger de entre las muertes que podamos generar en un minuto analizamos las opciones previas y maximizamos la suma de las muertes con las que contabamos hasta el reinicio que la opción que estoy evaluando implica y las muertes que genero en ese minuto.}
+
+
+\end{itemize}
+
+
+\subsection{Forma y composición del problema} Analizaremos cómo se comporta nuestro problema respecto a 2 ámbitos generales: la forma de los subproblemas y el cómo estos se componen para solucionar subproblemas más grandes. Es decir, evaluaremos someramente cómo se complica el problema al aumentar los minutos que durará el ataque de la nación del fuego ($n$). Más adelante, en el análisis de los efectos de la variablidad de datos podremos contemplar la concretización de las proposiciones planteadas.\\
+
+En principio, estipulamos que en el minuto 0, cuando no hay ninguna rafaga de soldados con los que tengamos que lidiar, la solución obvia es el no atacar (no tenemos ni energias ni objetivos que eliminar). Adicionalmente, si el tiempo total de duración de la batalla es $n$, no hay situación en la que no nos convenga atacar en este preciso minuto.Además, decimos que la complejidad de nuestro problema se encuentra en evaluar los soldados que podríamos eliminar con cierta energía teniendo en cuenta el óptimo que se tendría que tomar para poder eliminar los propuestos para esa horda. A continuación, estudiaremos el cómo se complica nuestro problema basandonos en la cantidad de opciones entre las que debemos encontrar la que nos funciona mejor para lograr la optimalidad.
+
+\subparagraph{¿Cómo se complica nuestro problema al incrementar $n$?} 
+\begin{itemize}
+    \item Cuando $n=1$ la \textbf{única opción} de energia es 1 (no hubo oportunidad de atacar)
+        \begin{center}
+        \begin{tabular}{ |c|c|c| }
+        \hline
+         \textbf{Opción 1:} sin reinicio & estrategia óptima hasta minuto 0& \textit{atacar} \\
+         \hline
+        \end{tabular}
+        \end{center}
+        
+    \item Cuando $n=2$ puedo llegar con \textbf{2 opciones de energia}: 1 o 2. Mis alternativas de estrategia son: 
+        \begin{center}
+        \begin{tabular}{ |c|c|c| }
+        \hline
+         \textbf{Opción 1:} sin reinicio& estrategia óptima hasta minuto 0& \textit{atacar} \\
+         \hline
+         \textbf{Opción 2:} reinicio en 1& estrategia óptima hasta minuto 1& \textit{atacar} \\
+        \hline
+        \end{tabular}
+        \end{center}
+        
+    \item Cuando $n=3$ puedo llegar con \textbf{3 opciones de energia}: 1, 2 o 3 (llegar con energia k implica usar la estrategia óptima para llegar con esa energia).
+        \begin{center}
+        \begin{tabular}{ |c|c|c|c| }
+        \hline
+         \textbf{Opción 1:} sin reinicio& estrategia óptima hasta minuto 0& \textit{atacar} \\
+         \hline
+         \textbf{Opción 2:} reinicio en 1& estrategia óptima hasta minuto 1& \textit{atacar} \\
+        \hline
+         \textbf{Opción 3:} reinicio en 2& estrategia óptima hasta minuto 2& \textit{atacar} \\
+        \hline
+        \end{tabular}
+        \end{center}
+        
+    \item Cuando $n=4$ puedo llegar con \textbf{4 opciones de energia}: 1, 2, 3 o 4 (llegar con energia k implica usar la estrategia óptima para llegar con esa energia).
+        \begin{center}
+        \begin{tabular}{ |c|c|c|c| }
+        \hline
+        \textbf{Opción 1:} sin reinicio& estrategia óptima hasta minuto 0& \textit{atacar} \\
+        \hline
+        \textbf{Opción 2:} reinicio en 1& estrategia óptima hasta minuto 1& \textit{atacar} \\
+        \hline
+        \textbf{Opción 3:} reinicio en 2& estrategia óptima hasta minuto 2& \textit{atacar} \\
+        \hline
+        \textbf{Opción 4:} reinicio en 3& estrategia óptima hasta minuto 3& \textit{atacar} \\
+        \hline
+        \end{tabular}
+        \end{center}
+\end{itemize}
+Podemos observar, respecto a la \textbf{forma de los subproblemas}, que para decidir con cuánta energia nos conviene llegar al último minuto debemos analizar $n$ opciones posibles, entre ellas se encuentra la que maximice el total de eliminaciones totales en dicha batalla. Respecto a la \textbf{composición de las subsoluciones} para obtener la solución en el minuto $n$, al contar con las estrategias previas no necesitamos reconsiderar las diferentes configuraciones que podrian llevarnos a que el último ataque sea el de la opción analizandose, ya contamos con la estrategia óptima que sucita un reinicio en ese minuto (precisamente porque resolvimos los subproblemas iterativamente y no pudimos haber llegado hasta el minuto actual sin haber considerado las previas soluciones); es decir, la decisión de la estrategia óptima en el minuto n solo requiere maximizar la suma de la estrategia tomada hasta el previo reinicio y las muertes de la rafaga del minuto n que podamos realizar de acuerdo al reincio previo que se esté tomando (sean n posibles reinicios los que podemos tomar)
+
+
+\paragraph{Es decir:} Mediante el análisis dado, podemos intuir cómo es que la cantidad de opciones totales que debemos evaluar por una batalla de $n$ minutos se puede expresar como: 
+\begin{center}\label{eq:suamtoriaOpciones}
+    $\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$.
+\end{center}
+
+Es decir, nuestro problema se complica de manera significativa a medida que aumenta $n$. Adicionalemnte, preveemos que al realizar las mediciones podriamos esperar un comportamiento un tanto mejor que uno cuadrático: no analizamos n opciones n veces. De este mismo estamento podemos intuir el comportamiento cuadrático de nuestro algoritmo (vease en \ref{sec:complexity}). La forma en la que componemos las posibles opciones a analizar nos permite descartar una variedad de posibilidades no deseadas (aquellas que no serían óptimas y no es de relvancia olvidarlas), para ello debemos de "recordar" los óptimos previos que nos podrían interesar a futuro para componer nuevas soluciones.
+
+Nos pareció relevante mencionar que si bien existen situaciones particulares respecto a los datos de entrada ($x_i,f_i$) en los que los óptimos para ciertos minutos pueden resultar evidentes (o no); nuestro algoritmo cubre todos los casos posibles y siempre da la respuesta apropiada pero en busqueda de mejorar los tiempos de ejecución se pueden realizar algunas optimizaciones respecto a dichas situaciones, estas mismas se detallarán en la sección dedicada a la variablidad (véase \ref{subsec:variabilidad})
+
+\subsection{Ecuacion de recurrencia} A partir del análisis previo, decimos que nuestra solución tiene la siguiente ecuación de recurrencia:
+\begin{center}
+    $OP(n)= \left\{ \begin{array}{lcc}
+         0& n=0  \\
+         max(\{min(x_n,f_{n-k-1})+OP(k),\forall k \in \mathbb{N}_0: k<n \}) &n>0 
+    \end{array} \right. $  
+\end{center}
+Sea $n$ la duración en minutos de la batalla, $x_n$ la cantidad de soldados que nos atacan en la ráfaga actual, $f_{n-k-1}$ la capacidad de ataque que sumada con la cantidad de eliminaciones acumuladas ($OP(k)$) maximiza la cantidad de muertes acumuladas hasta el final de la batalla ($OP(n)$).
+

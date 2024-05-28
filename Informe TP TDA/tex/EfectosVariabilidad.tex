@@ -1,0 +1,105 @@
+\section{Efectos de la variabilidad de datos}\label{subsec:variabilidad}
+En la presente sección llevaremos a cabo un análisis sobre los efectos que podría tener la variabilidad de los datos recibidos: $f_i$ y $x_i$n sobre aspectos de nuestro algoritmo propuesto como el tiempo de ejecución y la optimalidad de la solución obtenida. 
+\subsection{Efectos de la variabilidad de datos sobre el tiempo de ejecución.}
+Analizamos cuatro posibles variaciones en las que intuimos podría el tiempo de ejecución variar. 
+
+\begin{itemize}
+    \item Mientras el dato de la duración de la batalla sea más grande, por lo expuesto en el análisis de la complejidad (véase \ref{sec:complexity}), podemos esperar que los tiempos de ejecución efectivamente incremeneten de manera significativa. Para visualizar lo mecionado referirse a la sección dedicada a las mediciones (véase \ref{sec:mediciones}).
+    \item Si los datos de entrada ($x_i$, $f_i$) en conjunto son muy grandes, nos encontraremos con sumas y comparaciones que le tomarían más tiempo a la computadora, en general se esperaría que la diferencia en tiempos de ejecución no sea significante. Realizamos las mediciones pertinentes (con ($x_i$, $f_i$) pequeños y con ($x_i$, $f_i$) muy grandes) para concluir que si los datos de entrada ($x_i$, $f_i$) son muy grandes, el tiempo de ejecución se mantiene invariante. 
+    \item Respecto al tiempo de ejecución que se le agrega a nuestro programa por parte del algoritmo de reconstrucción, observamos que si bien este tiene un comportamiento lineal respecto a la duración de la batalla. El desempeño esperado sería mejor que este. Esto se puede comprender a travez del mismo ejemplo al que se realizó seguimiento en la sección del análisis del problema (véase \ref{sec:analisisProblema}), en el cual la reconstrucción consta de un solo paso. De manera más precisa, el tiempo que toma nuestro algoritmo de reconstrucción depende directamente de la cantidad de veces en las que se termina atacando en la estratégia final, que en el peor de los caso sería igual a $n$,
+
+    \item Si los datos de entrada ($x_i$) tienen una forma particular en la que no necesitemos realizar un análisis exahustivo (sobre las n opciones posibles para el minuto n) para determinar con qué energía mínima podemos llegar para obtener la misma cantidad de eliminaciones, podremos variar (mejorar) los tiempos de ejecución con una serie de optimizaciones para dichas situaciones. Esta variación requiere una detallado más profundo que los previos. Lo describiremos a continuación.
+
+
+
+    
+    % \item Si sucede que $x<<f$, la solución del problema resulta poder encontrarse con una complejidad lineal, pues, tiene sentido que si es que nos encontramos que particularmente la cantidad de soldados $x$ resulta menor a la mínima fuerza de ataque, entonces en ningún momento convendrá no atacar para cargar la fuerza para el próximo ataque, ya que de todas formas la cantidad de bajas que podamos alcanzar será la misma que si teníamos la mínima fuerza, que vendría siendo que se mata exactamente la totalidad de los soldados en la oleada: $x_i$.
+    % Cabe mencionar que, en este caso, si bien la solución resulta ser fácilmente asequible, el algoritmo por programación dinámica expuesto no tendría en cuenta que sea esta la situación, por lo que ejecutaría el mismo proceso cuadrático al igual que en el resto de casos. Es por esto que se decidió incorporar una optimización que considere si es que el máximo de los valores de $x$ resulta ser menor al mínimo valor de $f$ y de ser el caso resuelva linealmente el problema. 
+    % Cabe mencionar que para agregar esta optmización, como ya mencionamos, era necesario conocer el máximo valor de los datos $x$, para lo cual deberíamos ejecutar un proceso lineal respecto a la cantidad de minutos $n$, y si bien este mismo no agregaría complejidad en cualquiera de los casos: de no ser optimizable en este sentido la complejidad seguiría siendo cuadrática respecto a $n$, así como de sí serlo la complejidad seguiría siendo lineal respecto a $n$ (por el hecho de generar el arreglo con las n estrategias de "atcar"), decidimos ahorrarnoslo ya que de por si el generar los gráficos resultó ser un proceso tardado, por lo que optamos por recolectar este dato en la misma lectura de los datos iniciales. 
+    % En el caso de ser optimizable la solución resultaba ser:
+%     \begin{lstlisting}[language=Python]
+%     if f[0]>max_x:
+%         OP = [0] * (n + 1)
+%         for i in range(1,len(OP)):
+%             OP[i] = OP[i-1] + x[i-1]
+%         strategy = [ATACAR]*(len(x))
+%         return OP[-1], strategy
+% \end{lstlisting}
+%     La cual se ensambló con el algoritmo propuesto por programación dinámica de la siguiuente forma:
+%     \begin{lstlisting}[language=Python]
+%     def kills_and_strategy(n , x , f, max_x):
+%         if f[0]>max_x:
+%             return kills_and_strategy_opt(x)
+%         OP = [0] * (n + 1)
+%         prev_atack = [0] * (n)
+%         for i in range(1 , n + 1):
+%             for prev in range(i):
+%                 bajas = min(x[i - 1] , f[i - prev - 1]) + OP[prev]
+%                 if bajas >= OP[i]:
+%                     OP[i] = bajas
+%                     prev_atack[i - 1] = prev
+%         return OP[-1], reconstruction(prev_atack)
+
+%     def kills_and_strategy_opt(x):
+%         optimo = 0
+%         strategy = [ATACAR]*(len(x))
+%         for x_i in x:
+%             optimo += x_i
+%         return optimo, strategy
+% \end{lstlisting}
+    
+
+\end{itemize}
+\subsubsection{Optimización lineal} Para comprender la optimización propuesta por el equipo, veamos primero un ejemplo sencillo en el que se refleja un caso particular en el que es intuitivo con cuánta energía resulta y resultará conveniente atacar. 
+
+Sea el caso en el que la duración de la batalla es $n$ (irrelevante en esta sección) y sepamos que el máximo de soldados que vendrán en un ráfaga $i$ (es decir $max(x_i)$) es inferior a los soldados que podemos combatir con el mínimo de energía. Digamos, sea $x_2  = 800$ la máxima cantidad de soldados que enfrentaremos en una horda a lo largo de toda la batalla :
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c| }
+\hline
+\textbf{$x_i$} & 700 & 800& ... & 200 \\ \hline
+\textbf{$f_i$} & 900 & 1000&.. & 1200 \\
+\hline
+\end{tabular}
+\end{center}
+Resulta evidente que el cargar energía para un siguiente ataque nunca resulta siendo conveniente pues con cualquier otra energía la cantidad de bajas que podamos alcanzar será la misma que si tendríamos la mínima capacidad de eliminación. En este caso y en cualquier otro que cumpla que $x<<f$ no hace falta realizar el procedimiento cuadrático para derterminar que conviene atacar todos los minutos.
+
+Ahora, recapitulando en nuestra optimización. Tomamos en cuenta el ejemplo previo y lo generalizamos para que se puedan calcular los óptimos hasta donde se cumple lo mencionado para que cuando nos encontremos con el primer $x_i$ que no cumple $x_i<f_0$ (es decir que es superior a las muertes que genero con el mínimo de energía) entonces continuamos resolviendo el problema a través de nuestro algoritmo por programación dinámica.
+
+En código, los cambios a realizar en el algoritmo por programación dinámica sería precisamente el índice desde el cual se empieza a ejecutar este mismo. Además, para este momento los óptimos y los previos ataques se debieron haber calculado y guardado en el mismo lugar que si hubiesen sido calculados por programación dinámica (en caso de los óptimos, solo agregamos  en cada minuto las ráfagas que atacarán pues sabemos que podremos con todas incluso con el mínimo de energía y en caso de los previos ataques siempre marcar como el minuto anterior). Esto vendría siendo equivalente a lo entregado finalmente:
+
+\begin{lstlisting}[language=Python]
+    def kills_and_strategy_opt2(n, x, minf, OP, prev_atack):
+        inicio_x_i = n + 1
+        for i in range(1, n + 1):
+            x_i = x[i - 1]
+            if x_i > minf:
+                # ya no podemos aplicar la optimizacion
+                inicio_x_i = i
+                break
+            prev_atack[i - 1] = i - 1
+            OP[i] = x_i + OP[i - 1]
+
+    return inicio_x_i
+\end{lstlisting}
+Que como mencionamos, en nuestro algoritmo de programación dinámica parecería solo modificar el minuto en el que se empieza a a buscar los óptimos. 
+\begin{lstlisting}[language=Python]
+    def kills_and_strategy(n , x , f):
+        OP = [0] * (n + 1)
+        prev_atack = [0] * (n)
+    
+        inicio_x_i = kills_and_strategy_opt2(n, x, f[0], OP, prev_atack)
+    
+        for i in range(inicio_x_i , n + 1):
+            for prev in range(i):
+                bajas = min(x[i - 1] , f[i - prev - 1]) + OP[prev]
+                if bajas >= OP[i]:
+                    OP[i] = bajas
+                    prev_atack[i - 1] = prev
+                    
+        return OP[-1], reconstruction(prev_atack)
+\end{lstlisting}
+\subsection{Efectos de la variabilidad de los datos sobre la optimalidad de la solución obtenida} 
+En general, nuestro algoritmo es lo suficientemente robusto para no descuidar su optimalidad dentro del marco ofrecido en el problema (no hay minutos negativos, etc). De la misma forma, el cómo se aplica la optimización mencionada previamente no descuida la optimalidad si se considera que $f_0$ será el menor de entre todos los $f_i$. Dejando estos detalles de lado, nuestro algoritmo siempre encuentra la respuesta correcta.
+
+\newpage
