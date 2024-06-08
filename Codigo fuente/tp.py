@@ -1,5 +1,7 @@
 import sys
 import pulp # sudo apt install pip | pip install pulp
+import math
+import time
 
 def read_benders():
     filename = sys.argv[1:]
@@ -86,9 +88,62 @@ def lp_algorithm(benders_skills, groups_count):
     print("Coeficiente: " + str(problem.objective.value()))
     return r
 
+def get_coefficient(groups):
+    sum_sqr_groups = 0
+    for group in groups:
+        sum_group = 0
+        for bender in group:
+            sum_group += bender[1]
+        sum_sqr_groups += sum_group ** 2
+    return sum_sqr_groups
+
+def group_rec(benders_skills, min_coefficient, partial_result, groups_result, left_count, used):
+    
+    coefficient = get_coefficient(partial_result)
+
+    if left_count == 0 and coefficient < min_coefficient: # Reemplazo, tengo una mejor cota
+        for i in range(len(partial_result)):
+            groups_result[i].clear()
+            groups_result[i].extend(partial_result[i])
+
+        return coefficient
+    
+    if left_count == 0 or coefficient >= min_coefficient:
+        return min_coefficient
+
+    for bender in benders_skills: 
+        if bender in used:
+                continue
+        
+        for i in range(len(groups_result)):       
+                  
+            used.add(bender)
+            partial_result[i].append(bender)
+            
+            min_coefficient = group_rec(benders_skills, min_coefficient, partial_result , groups_result, left_count - 1, used)
+
+            partial_result[i].pop()
+            used.remove(bender)
+    
+    return min_coefficient
+
+def backtracking_algotithm(benders_skills, groups_count):
+    partial = []
+    groups_result = []
+        
+    for _ in range(groups_count):
+        partial.append([])
+        groups_result.append([])
+    
+    coefficient = group_rec(benders_skills, math.inf, partial, groups_result, len(benders_skills), set())
+    print()
+    print(coefficient)
+    print(groups_result)
+
 def main():
     benders_skills, groups_count = read_benders()
-    lp_algorithm(benders_skills, groups_count)
+    #lp_algorithm(benders_skills, groups_count)
+    backtracking_algotithm(benders_skills, groups_count)
 
 if __name__ == "__main__":
     main()
