@@ -97,33 +97,33 @@ def get_coefficient(groups):
         sum_sqr_groups += sum_group ** 2
     return sum_sqr_groups
 
-def group_rec(benders_skills, min_coefficient, partial_result, groups_result, left_count, used):
+def group_rec(benders_skills, min_coefficient, partial_result, groups_result, group_index, used):
     
     coefficient = get_coefficient(partial_result)
 
-    if left_count == 0 and coefficient < min_coefficient: # Reemplazo, tengo una mejor cota
+    if group_index == -1 and len(benders_skills) == len(used) and coefficient < min_coefficient: # Reemplazo, tengo una mejor cota
         for i in range(len(partial_result)):
             groups_result[i].clear()
             groups_result[i].extend(partial_result[i])
 
         return coefficient
+
     
-    if left_count == 0 or coefficient >= min_coefficient:
+    if group_index == -1 or len(benders_skills) == len(used) or coefficient >= min_coefficient:
         return min_coefficient
 
     for bender in benders_skills: 
         if bender in used:
-                continue
-        
-        for i in range(len(groups_result)):       
-                  
-            used.add(bender)
-            partial_result[i].append(bender)
-            
-            min_coefficient = group_rec(benders_skills, min_coefficient, partial_result , groups_result, left_count - 1, used)
+            continue
 
-            partial_result[i].pop()
-            used.remove(bender)
+        partial_result[group_index].append(bender)
+        used.add(bender)
+
+        min_coefficient = group_rec(benders_skills, min_coefficient, partial_result , groups_result, group_index, used)
+        min_coefficient = group_rec(benders_skills, min_coefficient, partial_result , groups_result, group_index-1, used)
+        
+        partial_result[group_index].pop()
+        used.remove(bender)
     
     return min_coefficient
 
@@ -135,8 +135,7 @@ def backtracking_algotithm(benders_skills, groups_count):
         partial.append([])
         groups_result.append([])
     
-    coefficient = group_rec(benders_skills, math.inf, partial, groups_result, len(benders_skills), set())
-    print()
+    coefficient = group_rec(benders_skills, math.inf, partial, groups_result, groups_count - 1, set())
     print(coefficient)
     print(groups_result)
 
