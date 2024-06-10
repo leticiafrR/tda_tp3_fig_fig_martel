@@ -97,47 +97,46 @@ def get_coefficient(groups):
         sum_sqr_groups += sum_group ** 2
     return sum_sqr_groups
 
-def group_rec(benders_skills, min_coefficient, partial_result, groups_result, group_index, used):
+def backtracking_algotithm(benders_skills, groups_count):
+    groups_result = []
+        
+    start_time = time.time()
     
+    for _ in range(groups_count):
+        groups_result.append([])
+    
+    coefficient = group_rec(benders_skills, groups_count, 0, [], groups_result, math.inf)
+    print(coefficient)
+    print(groups_result)
+
+    end_time = time.time()    
+    time_ms = round((end_time - start_time) * 1000, 3)
+    print(time_ms, "ms")
+
+
+def group_rec(benders_skills, n, index, partial_result, groups_result, min_coefficient):
+
     coefficient = get_coefficient(partial_result)
 
-    if group_index == -1 and len(benders_skills) == len(used) and coefficient < min_coefficient: # Reemplazo, tengo una mejor cota
+    if len(partial_result) == n and index == len(benders_skills) and coefficient < min_coefficient: # Reemplazo, tengo una mejor cota
         for i in range(len(partial_result)):
             groups_result[i].clear()
             groups_result[i].extend(partial_result[i])
-
         return coefficient
 
-    
-    if group_index == -1 or len(benders_skills) == len(used) or coefficient >= min_coefficient:
+    if index == len(benders_skills) or coefficient >= min_coefficient:
         return min_coefficient
 
-    for bender in benders_skills: 
-        if bender in used:
-            continue
-
-        partial_result[group_index].append(bender)
-        used.add(bender)
-
-        min_coefficient = group_rec(benders_skills, min_coefficient, partial_result , groups_result, group_index, used)
-        min_coefficient = group_rec(benders_skills, min_coefficient, partial_result , groups_result, group_index-1, used)
-        
-        partial_result[group_index].pop()
-        used.remove(bender)
+    for i in range(len(partial_result)):
+        partial_result[i].append(benders_skills[index])
+        min_coefficient = group_rec(benders_skills, n, index + 1, partial_result, groups_result, min_coefficient)
+        partial_result[i].pop()
     
+    if len(partial_result) < n:
+        partial_result.append([benders_skills[index]])
+        min_coefficient = group_rec(benders_skills, n, index + 1, partial_result, groups_result, min_coefficient)
+        partial_result.pop()
     return min_coefficient
-
-def backtracking_algotithm(benders_skills, groups_count):
-    partial = []
-    groups_result = []
-        
-    for _ in range(groups_count):
-        partial.append([])
-        groups_result.append([])
-    
-    coefficient = group_rec(benders_skills, math.inf, partial, groups_result, groups_count - 1, set())
-    print(coefficient)
-    print(groups_result)
 
 def main():
     benders_skills, groups_count = read_benders()
@@ -146,3 +145,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
