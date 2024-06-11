@@ -1,4 +1,4 @@
-# tp2
+# tp3
 Primera entrega TP3
 ## Integrantes
   - Josue Martel: 110696
