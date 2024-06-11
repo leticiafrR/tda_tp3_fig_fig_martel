@@ -98,6 +98,9 @@ def get_coefficient(groups):
     return sum_sqr_groups
 
 def backtracking_algotithm(benders_skills, groups_count):
+
+    benders_skills = sorted(benders_skills, key=lambda x : x[1], reverse=True)
+
     groups_result = []
         
     start_time = time.time()
