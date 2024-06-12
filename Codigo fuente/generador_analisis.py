@@ -39,9 +39,9 @@ def calcular_datos(total, salto, const_b):
                 cant_g = 1
             #tiempo_ms = calcular_tiempo_algoritmo(lambda : tp.greedy_resolution(maestros, cant_g))
             #tiempo_ms = calcular_tiempo_algoritmo(lambda : tp.backtracking_algotithm(maestros, cant_g))
-            tiempo_ms = calcular_tiempo_algoritmo(lambda : tp.backtracking_greedy_algotithm(maestros, cant_g))
+            #tiempo_ms = calcular_tiempo_algoritmo(lambda : tp.backtracking_greedy_algotithm(maestros, cant_g))
             
-            #tiempo_ms = calcular_tiempo_algoritmo(lambda : tp.lp_algorithm(maestros, cant_g))
+            tiempo_ms = calcular_tiempo_algoritmo(lambda : tp.lp_algorithm(maestros, cant_g))
 
             #tiempo_ms = calcular_primedio_tiempo(3, lambda : tp.greedy_resolution(maestros, cant_g))
             datos.append((cant_actual, cant_g, tiempo_ms))
