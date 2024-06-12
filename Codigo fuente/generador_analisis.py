@@ -11,7 +11,7 @@ def calcular_tiempo_algoritmo(algoritmo):
     algoritmo()
     tiempo_fin = time.time()
 
-    tiempo_ms = round((tiempo_fin - tiempo_inicio) * 1000, 3)
+    tiempo_ms = round((tiempo_fin - tiempo_inicio) * 1000, 6)
     return tiempo_ms
 
 def calcular_primedio_tiempo(cantidad, algoritmo):
@@ -19,32 +19,43 @@ def calcular_primedio_tiempo(cantidad, algoritmo):
     for _ in range(cantidad):
         sumatoria += calcular_tiempo_algoritmo(algoritmo)
 
-    promedio_tiempo_ms = round(sumatoria / cantidad, 3)
+    promedio_tiempo_ms = round(sumatoria / cantidad, 6)
     return promedio_tiempo_ms
 
 
 def calcular_datos(total, salto, const_b):
     datos = []
-    cant_actual = 0
 
-    for _ in range(salto, total + 1, salto):
-        cant_actual += salto
+    #cant_grupos_list = [3, 1.5]
+    cant_grupos_list = [1.5]
+    #cant_grupos_list = [3]
+
+    for cant_actual in range(salto, total + 1, salto):
         maestros = generate_benders(cant_actual, const_b)
 
-        for _ in range(3):
-            cant_grupos = random.randint(2, len(maestros))
+        for cant_grupos in cant_grupos_list:
+            cant_g = (int(len(maestros) / cant_grupos))
+            if cant_g == 0:
+                cant_g = 1
+            #tiempo_ms = calcular_tiempo_algoritmo(lambda : tp.greedy_resolution(maestros, cant_g))
+            #tiempo_ms = calcular_tiempo_algoritmo(lambda : tp.backtracking_algotithm(maestros, cant_g))
+            tiempo_ms = calcular_tiempo_algoritmo(lambda : tp.backtracking_greedy_algotithm(maestros, cant_g))
+            
+            #tiempo_ms = calcular_tiempo_algoritmo(lambda : tp.lp_algorithm(maestros, cant_g))
 
-            tiempo_ms = calcular_tiempo_algoritmo(lambda : tp.backtracking_algotithm(maestros, cant_grupos))
-            #tiempo_ms = calcular_primedio_tiempo(3, lambda : tp.backtracking_algotithm(maestros))
+            #tiempo_ms = calcular_primedio_tiempo(3, lambda : tp.greedy_resolution(maestros, cant_g))
+            datos.append((cant_actual, cant_g, tiempo_ms))
 
-        datos.append((cant_actual, tiempo_ms))
+            cant_grupos+=1
+
     return datos
 
 def guardar_datos_csv(nombre_archivo, datos):
     archivo = open(nombre_archivo, "w", newline="")
     csv_escritor = csv.writer(archivo, delimiter=";")
     for dato in datos:
-        dato = [str(dato[0]), str(dato[1])]
+        dato = [str(dato[0]) + "_" + str(dato[1]), str(dato[2])]
+        #dato = [str(dato[0]), str(dato[2])]
         csv_escritor.writerow(dato)
     archivo.close()
 
