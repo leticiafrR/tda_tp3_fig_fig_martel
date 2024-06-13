@@ -11,13 +11,8 @@ def lp_algorithm(benders_skills, groups_count):
 
     problem = pulp.LpProblem("benders", pulp.LpMinimize)
 
-    for i in range(groups_count):
-        problem += pulp.LpAffineExpression([(S[i][j], benders_skills[j][1]) for j in range(benders_count)]) >= 1 # Aseguro que en cada grupo haya al menos un maestro
-
     for k in range(benders_count):
-        problem += pulp.lpSum([S[i][k] for i in range(groups_count)]) <= 1 # Aseguro que no se repitan los binarios en diferentes grupos
-
-    problem += pulp.lpSum([S[i][j] for i in range(groups_count) for j in range(benders_count)]) == benders_count # Aseguro que se usen todos los maestros
+        problem += pulp.lpSum([S[i][k] for i in range(groups_count)]) == 1 # Aseguro que no se repitan los binarios en diferentes grupos
 
     auxiliar_and_vars = []
     
