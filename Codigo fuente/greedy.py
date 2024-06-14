@@ -1,4 +1,4 @@
-from reader import *
+from executer import *
 
 def greedy_resolution_data(bender_skills, cant_groups):
     bender_skills = sorted(bender_skills, key=lambda x : x[1], reverse=True)
