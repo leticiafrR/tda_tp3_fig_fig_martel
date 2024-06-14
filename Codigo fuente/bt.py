@@ -1,5 +1,5 @@
 import math
-from reader import *
+from executer import *
 
 def get_coefficient(groups):
     sum_sqr_groups = 0
