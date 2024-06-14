@@ -28,7 +28,7 @@ Pakku, 91<br>
 Sura, 159<br>
 Tonraq, 27<br>
 
-Omitiendo el contexto, La primera linea indica la cantidad de grupos a formar, las siguientes n lineas son de la forma 'nombre maestro, habilidad':
+Omitiendo el contexto, La primera linea indica la cantidad de grupos a formar, las siguientes n lineas son de la forma 'nombre maestro, habilidad'
 
 ### Generador de datos
 Para generar un set de datos con archivo de salida, cantidad de maestros y grupos específica, ejecutar el siguiente comando en la terminal:
