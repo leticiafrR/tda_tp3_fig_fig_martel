@@ -1,5 +1,5 @@
 import pulp
-from reader import *
+from executer import *
 
 def lp_algorithm(benders_skills, groups_count):
     S = []
