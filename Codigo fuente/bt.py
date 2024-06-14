@@ -1,4 +1,5 @@
 import math
+from reader import *
 
 def get_coefficient(groups):
     sum_sqr_groups = 0
@@ -70,3 +71,9 @@ def backtracking_algotithm(benders_skills, groups_count, min_coefficient = math.
     coefficient, _ = group_rec(benders_skills, groups_count, 0, [], groups_result, min_coefficient, max_group_sum)
 
     return coefficient, groups_result
+
+def main():
+    execute(backtracking_algotithm)
+
+if __name__ == "__main__":
+    main()

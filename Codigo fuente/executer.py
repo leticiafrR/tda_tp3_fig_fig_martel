@@ -18,3 +18,10 @@ def read_benders():
 
                     
     return benders_skills, groups_count
+
+def execute(func):
+    benders_skills, groups_count = read_benders()
+
+    coefficient, groups = func(benders_skills, groups_count)
+    print("Coeficiente:", coefficient)
+    print("Grupos:", groups)

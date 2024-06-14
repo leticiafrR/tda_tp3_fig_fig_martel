@@ -44,7 +44,6 @@ Respecto al algoritmo de reconstrucción, dados los minutos en los que realizamo
 \subsection{Complejidad del algoritmo}\label{sec:complexity}
 
 \subsubsection{La complejidad temporal del programa  es  $\mathcal{O}(n^{2})$ }
-\paragraph{Justificación:}\newline
 \textbf{Respecto al algoritmo de programación dinámica:}
 Consideramos (y calculamos efectivamente) $j$ posibles opciones de energía con las que podemos llegar al minuto actual: $i$ (de forma que $0<j<i$). Es que en el peor de los casos, cuando $i=n$, debemos evaluar $n$ opciones de energía, generalizando este caso para cada iteración es que llegamos a la complejidad temporal propuesta. Si queremos ser minuciosos, previamente en el análisis de la forma y composición del problema (vease \ref{eq:suamtoriaOpciones}) podemos verificar que aproximadamente en cada iteración analizamos n opciones (aunque en la realidad $n$ dependa de la iteración en la que nos encontramos, pero este nunca será superior a la duración de la batalla entera).
 
