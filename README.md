@@ -1,9 +1,9 @@
 # tp3
 Primera entrega TP3
 ## Integrantes
-  - Josue Martel: 110696
-  - Andrea Figueroa: 110450
-  - Leticia Figueroa: 110510
+  - Josue Martel
+  - Andrea Figueroa
+  - Leticia Figueroa
 ## Instrucciones de ejecución
 ### Programa
 Para ejecutar el programa con un archivo de entrada (por ejemplo) datos.txt, ejecutar el siguiente comando en la terminal según el algoritmo preferido:
